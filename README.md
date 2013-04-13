@@ -32,7 +32,7 @@ You can do more complex things. Say for example you only wanted to sign on a spe
 
     >>> from nginx_signing.signing import UriQuerySigner
     >>> signer = UriQuerySigner(SECRET_KEY)
-    >>> signer.sign('url', quote('http://gjcourt/com/', safe='/'))
+    >>> signer.sign('url', quote('http://gjcourt/com/', safe=''))
     'url=http%3A%2F%2Fgjcourt.com&st=5w5aZT_WaMY8LhvQL055gg&e=1365904071'
 
 
