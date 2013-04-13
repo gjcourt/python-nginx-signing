@@ -46,8 +46,7 @@ class UriSigner(Nginx):
 
 
 class UriQuerySigner(Nginx):
-    def sign(self, uri):
-        safe_uri = quote(uri, safe='')
-        sig, exp = self.signature(safe_uri)
-        return 'url=%s&st=%s&e=%s' % (safe_uri, sig, exp)
+    def sign(self, key, value):
+        sig, exp = self.signature(value)
+        return '%s=%s&st=%s&e=%s' % (key, value, sig, exp)
 
