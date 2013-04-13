@@ -1,7 +1,6 @@
 from base64 import urlsafe_b64encode
 from hashlib import md5
 from time import time
-from urllib import quote
 from urlparse import urlparse, urlunparse, ParseResult
 
 
