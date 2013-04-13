@@ -1,0 +1,3 @@
+dist/
+nginx_signing.egg-info/
+*.pyc
