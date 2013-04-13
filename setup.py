@@ -1,9 +1,9 @@
 from setuptools import setup
-from nginx_signing import __version__
+import nginx_signing
 
 setup(
     name = 'nginx_signing',
-    version = __version__,
+    version = nginx_signing.__version__,
     author = "George Courtsunis",
     author_email = "gjcourt@gmail.com",
     description = "Signs urls to work with the nginx Secure Link module",
