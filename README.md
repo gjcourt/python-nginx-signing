@@ -8,9 +8,10 @@ This simple library allows you to sign requests as required by the Nginx [Secure
 
 
 
-== Installation
+Installation
+------------
 
-> pip install nginx_signing
+`>>> pip install nginx_signing`
 
 Uri Example
 -----------
