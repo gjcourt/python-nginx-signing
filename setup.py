@@ -1,5 +1,5 @@
-from setuptools import setup
 import nginx_signing
+from setuptools import setup
 
 setup(
     name = 'nginx_signing',
