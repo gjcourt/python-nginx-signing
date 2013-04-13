@@ -19,10 +19,10 @@ Uri Example
 
 The following example shows you how to sign an entire uri as documented in the nginx configuration [here](http://wiki.nginx.org/HttpSecureLinkModule#Example_usage:)
 
-`>>> from nginx_signing.signing import UriSigner`
-`>>> signer = UriSigner(SECRET_KEY)`
-`>>> signer.sign('http://gjcourt.com')`
-`'http://gjcourt.com?&st=uDqsQqA_ysTYR_bUdMUAGw&e=1365903669'`
+`>>> from nginx_signing.signing import UriSigner
+>>> signer = UriSigner(SECRET_KEY)
+>>> signer.sign('http://gjcourt.com')
+'http://gjcourt.com?&st=uDqsQqA_ysTYR_bUdMUAGw&e=1365903669'`
 
 
 Query String Example
