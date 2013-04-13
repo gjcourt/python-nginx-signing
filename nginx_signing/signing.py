@@ -36,7 +36,7 @@ class UriSigner(Nginx):
         parsed = urlparse(uri)
 
         query = parsed.query
-        if not query:
+        if query:
             query += '&'
         query += 'st=%s&e=%s' % (sig, exp)
 

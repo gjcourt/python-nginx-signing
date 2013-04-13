@@ -1,3 +1,1 @@
-__version__ = "0.1"
-
-from signing import *
+__version__ = "0.1.1"
