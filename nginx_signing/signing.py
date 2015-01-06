@@ -11,12 +11,13 @@ def generate_key(s):
 
 
 class Signer(object):
-    def __init__(self, key, timeout=DEFAULT):
+    def __init__(self, key, timeout=DEFAULT, format='{key}{value}{expiration}'):
         self.key = key
         if timeout is DEFAULT:
             self.timeout = 60*60*24  # 24 hours
         else:
             self.timeout = timeout
+        self.format = format
 
     def sign(self, *args, **kwargs):
         raise NotImplementedError
@@ -30,7 +31,7 @@ class Nginx(Signer):
 
     def signature(self, s):
         expiration = self.get_expiration()
-        string = self.key + s + expiration
+        string = self.format.format(key=self.key, value=s, expiration=expiration)
         return generate_key(string), expiration
 
 
