@@ -10,5 +10,5 @@ setup(
     license="MIT License",
     packages=['nginx_signing'],
     keywords="nginx signing secure_link",
-    url="http://github.com/gjcourt/python-nginx-signer",
+    url="https://github.com/gjcourt/python-nginx-signing",
 )
