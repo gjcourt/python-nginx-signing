@@ -11,4 +11,5 @@ setup(
     packages=['nginx_signing'],
     keywords="nginx signing secure_link",
     url="https://github.com/gjcourt/python-nginx-signing",
+    install_requires = ['six']
 )

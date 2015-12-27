@@ -1,13 +1,13 @@
 from base64 import urlsafe_b64encode
 from hashlib import md5
 from time import time
-from urlparse import urlparse, urlunparse, ParseResult
+from six.moves.urllib.parse import urlparse, urlunparse, ParseResult
 
 DEFAULT = object()
 
 
 def generate_key(s):
-    return urlsafe_b64encode(md5(s).digest()).rstrip('=')
+    return urlsafe_b64encode(md5(s.encode('utf-8')).digest()).decode().rstrip('=')
 
 
 class Signer(object):
