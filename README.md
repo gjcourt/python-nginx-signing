@@ -27,7 +27,7 @@ string:
     'http://gjcourt.com?st=uDqsQqA_ysTYR_bUdMUAGw&e=1365903669'
 
 Query String Example
----------------------
+--------------------
 
 `UriQuerySigner` signs a single value instead of a whole URI, for when
 only one query string argument needs to be protected:
