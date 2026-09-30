@@ -3,7 +3,7 @@
 
 Signs urls to work with the Secure Link module of nginx
 
-nginx's [Secure Link](http://wiki.nginx.org/HttpSecureLinkModule) module can
+nginx's [Secure Link](https://nginx.org/en/docs/http/ngx_http_secure_link_module.html) module can
 protect a URL with a hashed signature and an expiration, but generating that
 signature outside nginx means reimplementing its MD5-and-base64 scheme by
 hand. python-nginx-signing does that math in Python instead, producing the
@@ -32,17 +32,20 @@ python -c "import nginx_signing; print(nginx_signing.__version__)"
 
 ## Usage
 
+The examples below were run under Python 2.7 with the key `'secret'`. `e`
+is the current time plus the timeout, so `st` and `e` differ on every run.
+
 Sign an entire URI, appending `st` and `e` to its query string:
 
 ```python
 from nginx_signing.signing import UriSigner
 
-signer = UriSigner(SECRET_KEY)
+signer = UriSigner('secret')
 signer.sign('http://gjcourt.com')
 ```
 
 ```text
-'http://gjcourt.com?st=N22oa2M9bMxj-RUMGp4QMw&e=1790834527'
+'http://gjcourt.com?st=3ZMB8JaG9DCnvsRbyBQduQ&e=1790847394'
 ```
 
 Sign a single query argument instead of the whole URI:
@@ -51,12 +54,12 @@ Sign a single query argument instead of the whole URI:
 from urllib import quote
 from nginx_signing.signing import UriQuerySigner
 
-signer = UriQuerySigner(SECRET_KEY)
+signer = UriQuerySigner('secret')
 signer.sign('url', quote('http://gjcourt.com/', safe=''))
 ```
 
 ```text
-'url=http%3A%2F%2Fgjcourt.com%2F&st=H7XDtdgjdj-TMfjlCd82HQ&e=1790834527'
+'url=http%3A%2F%2Fgjcourt.com%2F&st=oc1AZam1xITmXLWNoWwD1Q&e=1790847394'
 ```
 
 ## Configuration
@@ -67,12 +70,12 @@ Both signers take the same constructor arguments, defined on the base
 | Name | Default | Meaning |
 |---|---|---|
 | `key` | *(required)* | The shared secret, matching `secure_link_md5` in nginx. |
-| `timeout` | `86400` (24 hours) | Seconds from now until the signature expires. Pass `None` to sign without an expiration. |
+| `timeout` | `86400` (24 hours) | Seconds from now until the signature expires. Pass `None` to sign without an expiration (`e` is then empty). |
 | `format` | `'{key}{value}{expiration}'` | Template for the string that gets hashed; must match the expression nginx is configured to hash. |
 
 ## How it works
 
-`Signer.signature()` fills `format` with the key, the value being signed,
+`Nginx.signature()` (the shared base of both signers) fills `format` with the key, the value being signed,
 and the computed expiration, MD5-hashes the result, and base64url-encodes
 the digest with trailing `=` stripped — the same recipe nginx's
 `secure_link_md5` module computes when it checks an incoming request.
