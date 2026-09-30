@@ -93,4 +93,4 @@ pip install -e .
 
 ## License
 
-No licence file yet.
+[MIT](LICENSE).
