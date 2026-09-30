@@ -1,52 +1,93 @@
-Python Nginx Signing
-====================
+<!-- readme-type: tool -->
+# python-nginx-signing
 
-A small library for generating the `st`/`e` signature and expiration
-parameters expected by nginx's [Secure Link](http://wiki.nginx.org/HttpSecureLinkModule)
-module, so requests can be signed on the Python side without reimplementing
-nginx's MD5/base64 scheme by hand.
+Signs urls to work with the Secure Link module of nginx
 
-This targets Python 2: `nginx_signing/signing.py` imports the standalone
-`urlparse` module, which no longer exists in Python 3.
+nginx's [Secure Link](http://wiki.nginx.org/HttpSecureLinkModule) module can
+protect a URL with a hashed signature and an expiration, but generating that
+signature outside nginx means reimplementing its MD5-and-base64 scheme by
+hand. python-nginx-signing does that math in Python instead, producing the
+same `st`/`e` values nginx's `secure_link_md5` directive expects. It provides
+two signers: one for signing an entire URL, one for signing a single query
+argument.
 
-Installation
-------------
+**Status:** unmaintained since 2015 — Python 2 only. `nginx_signing.signing`
+fails to import under Python 3 (confirmed here: `ModuleNotFoundError: No
+module named 'urlparse'`).
 
-    pip install nginx_signing
+## Quick start
 
-Uri Example
------------
+Needs: Python 2.7 to actually sign anything (see Status above); installing
+and checking the version work on Python 3 too.
 
-`UriSigner` signs an entire URI, matching the ["Example usage"](http://wiki.nginx.org/HttpSecureLinkModule#Example_usage:)
-section of the nginx docs. It appends `st` and `e` to the URI's query
-string:
+```bash
+git clone https://github.com/gjcourt/python-nginx-signing && cd python-nginx-signing
+pip install .
+python -c "import nginx_signing; print(nginx_signing.__version__)"
+```
 
-    >>> from nginx_signing.signing import UriSigner
-    >>> signer = UriSigner(SECRET_KEY)
-    >>> signer.sign('http://gjcourt.com')
-    'http://gjcourt.com?st=uDqsQqA_ysTYR_bUdMUAGw&e=1365903669'
+```text
+0.1.6
+```
 
-Query String Example
---------------------
+## Usage
 
-`UriQuerySigner` signs a single value instead of a whole URI, for when
-only one query string argument needs to be protected:
+Sign an entire URI, appending `st` and `e` to its query string:
 
-    >>> from nginx_signing.signing import UriQuerySigner
-    >>> signer = UriQuerySigner(SECRET_KEY)
-    >>> signer.sign('url', quote('http://gjcourt.com/', safe=''))
-    'url=http%3A%2F%2Fgjcourt.com%2F&st=5w5aZT_WaMY8LhvQL055gg&e=1365904071'
+```python
+from nginx_signing.signing import UriSigner
 
-Configuration
--------------
+signer = UriSigner(SECRET_KEY)
+signer.sign('http://gjcourt.com')
+```
 
-Both signers are constructed with the same arguments, defined on the
-base `Signer` class in `nginx_signing/signing.py`:
+```text
+'http://gjcourt.com?st=N22oa2M9bMxj-RUMGp4QMw&e=1790834527'
+```
 
-- `key` - the shared secret, matching whatever is configured for
-  `secure_link_md5` in nginx.
-- `timeout` - seconds from now until the signature expires. Defaults to
-  86400 (24 hours). Pass `None` to sign without an expiration.
-- `format` - the template used to build the string that gets hashed.
-  Defaults to `'{key}{value}{expiration}'` and must match the expression
-  nginx is configured to hash on its end.
+Sign a single query argument instead of the whole URI:
+
+```python
+from urllib import quote
+from nginx_signing.signing import UriQuerySigner
+
+signer = UriQuerySigner(SECRET_KEY)
+signer.sign('url', quote('http://gjcourt.com/', safe=''))
+```
+
+```text
+'url=http%3A%2F%2Fgjcourt.com%2F&st=H7XDtdgjdj-TMfjlCd82HQ&e=1790834527'
+```
+
+## Configuration
+
+Both signers take the same constructor arguments, defined on the base
+`Signer` class in `nginx_signing/signing.py`:
+
+| Name | Default | Meaning |
+|---|---|---|
+| `key` | *(required)* | The shared secret, matching `secure_link_md5` in nginx. |
+| `timeout` | `86400` (24 hours) | Seconds from now until the signature expires. Pass `None` to sign without an expiration. |
+| `format` | `'{key}{value}{expiration}'` | Template for the string that gets hashed; must match the expression nginx is configured to hash. |
+
+## How it works
+
+`Signer.signature()` fills `format` with the key, the value being signed,
+and the computed expiration, MD5-hashes the result, and base64url-encodes
+the digest with trailing `=` stripped — the same recipe nginx's
+`secure_link_md5` module computes when it checks an incoming request.
+`UriSigner` appends the result to a full URL as `st`/`e` query parameters;
+`UriQuerySigner` returns just the `key=value&st=...&e=...` pair for signing
+one argument.
+
+## Development
+
+There is no Makefile, test suite, or CI configured for this repo yet.
+
+```bash
+pip install -e .
+```
+
+## License
+
+No licence file yet.
